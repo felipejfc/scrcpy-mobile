@@ -30,6 +30,8 @@
 @property (nonatomic, weak)   ScrcpyTextField *display;
 @property (nonatomic, weak)   ScrcpyTextField *startApp;
 
+@property (nonatomic, weak)   UISegmentedControl *videoCodec;
+
 @property (nonatomic, weak)   ScrcpySwitch  *turnScreenOff;
 @property (nonatomic, weak)   ScrcpySwitch  *stayAwake;
 @property (nonatomic, weak)   ScrcpySwitch  *forceAdbForward;
@@ -186,6 +188,20 @@
                 view.delegate = (id<UITextFieldDelegate>)_self;
                 _self.startApp = view;
             }),
+        CVCreate.UIStackView(@[
+            CVCreate.UILabel.text(NSLocalizedString(@"Video Codec:", nil))
+                .fontSize(16.f).textColor([UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull traitCollection) {
+                    return traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark ? UIColor.whiteColor : UIColor.blackColor;
+                }]),
+            CVCreate.create(UISegmentedControl.class)
+                .size(CGSizeMake(0, 40))
+                .customView(^(UISegmentedControl *view){
+                    [view insertSegmentWithTitle:@"H.264" atIndex:0 animated:NO];
+                    [view insertSegmentWithTitle:@"H.265" atIndex:1 animated:NO];
+                    view.selectedSegmentIndex = 0; // Default to H.264
+                    _self.videoCodec = view;
+                }),
+        ]).spacing(10.f),
         CreateScrcpySwitch(NSLocalizedString(@"Turn Screen Off:", nil),
             @"turn-screen-off",
             ^(ScrcpySwitch *view){
@@ -358,6 +374,10 @@
     options = updateTextOptions(options, self.display);
     options = updateTextOptions(options, self.startApp);
     
+    // Handle video codec selection
+    NSString *selectedCodec = self.videoCodec.selectedSegmentIndex == 1 ? @"h265" : @"h264";
+    options = [ScrcpySharedClient setScrcpyOption:options name:@"video-codec" value:selectedCodec];
+    
     NSArray * (^updateSwitchOptions)(NSArray *options, ScrcpySwitch *) = ^NSArray * (NSArray *options, ScrcpySwitch *s) {
         [s updateOptionValue];
         if (s.on == NO) return options;
@@ -402,6 +422,11 @@
     urlComps.queryItems = updateURLTextItems(urlComps.queryItems, self.maxFps);
     urlComps.queryItems = updateURLTextItems(urlComps.queryItems, self.display);
     urlComps.queryItems = updateURLTextItems(urlComps.queryItems, self.startApp);
+    
+    // Add video codec to URL scheme
+    NSString *selectedCodec = self.videoCodec.selectedSegmentIndex == 1 ? @"h265" : @"h264";
+    NSURLQueryItem *codecItem = [NSURLQueryItem queryItemWithName:@"video-codec" value:selectedCodec];
+    urlComps.queryItems = [urlComps.queryItems arrayByAddingObject:codecItem];
     
     // Assemble bool options
     NSArray *(^updateURLBoolItems)(NSArray *, ScrcpySwitch *) = ^NSArray *(NSArray *items, ScrcpySwitch *s) {

@@ -76,3 +76,4 @@
 "ADB Key has been MODIFIED but not saved, do you confirm to exit?" = "ADB 密钥对已修改但尚未保存，是否确认退出？";
 "ADB Key Pairs Exported" = "ADB 密钥对已导出";
 "ADB Key Pair Saved! Please restart app to take effect." = "ADB 密钥对保存成功！请重启 app 生效。";
+"Video Codec:" = "视频编码：";

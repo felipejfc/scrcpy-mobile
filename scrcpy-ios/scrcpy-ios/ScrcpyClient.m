@@ -464,7 +464,7 @@ void ScrcpyHandleFrame(AVFrame *frame) {
 
 -(NSArray *)availableOptions {
     return @[ @"max-size", @"video-bit-rate", @"audio-bit-rate", @"audio-buffer",
-              @"audio-codec", @"no-audio", @"disable-screensaver", @"video-buffer",
+              @"audio-codec", @"video-codec", @"no-audio", @"disable-screensaver", @"video-buffer",
               @"force-adb-forward", @"max-fps", @"power-off-on-close", @"turn-screen-off",
               @"show-touches", @"stay-awake", @"new-display", @"start-app", ];
 }
